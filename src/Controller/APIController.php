@@ -79,14 +79,20 @@ class APIController extends AbstractController
     }
 
     /**
-     * @Route("/api/song/{id}", name="api.songs.detail")
+     * @Route("/api/song/{idOrReference}", name="api.songs.detail")
      */
-    public function songDetail(Request $request, int $id)
+    public function songDetail(Request $request, $idOrReference)
     {
         $em = $this->getDoctrine()->getManager();
         $data = [];
 
-        $result = $em->getRepository(Song::class)->findOneBy(array('id' => $id));
+        if(is_numeric($idOrReference)) {
+            // $idOrReference is the ID
+            $result = $em->getRepository(Song::class)->findOneBy(array('id' => $idOrReference));
+        } else {
+            // $idOrReference is the file Reference
+            $result = $em->getRepository(Song::class)->findOneBy(array('fileReference' => $idOrReference));
+        }
         $baseUrl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
         if(!$result) {
