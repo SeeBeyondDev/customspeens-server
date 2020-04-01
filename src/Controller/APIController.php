@@ -40,7 +40,7 @@ class APIController extends AbstractController
 
             $oneResult['id'] = $result->getId();
             $oneResult['title'] = $result->getTitle();
-            $oneResult['subtitle'] = $result->getTitle();
+            $oneResult['subtitle'] = $result->getSubtitle();
             $oneResult['artist'] = $result->getArtist();
             $oneResult['charter'] = $result->getCharter();
             $oneResult['cover'] = $baseUrl."/uploads/cover/".$result->getFileReference().".png";
@@ -67,7 +67,7 @@ class APIController extends AbstractController
 
             $oneResult['id'] = $result->getId();
             $oneResult['title'] = $result->getTitle();
-            $oneResult['subtitle'] = $result->getTitle();
+            $oneResult['subtitle'] = $result->getSubtitle();
             $oneResult['artist'] = $result->getArtist();
             $oneResult['charter'] = $result->getCharter();
             $oneResult['cover'] = $baseUrl."/uploads/cover/".$result->getFileReference().".png";
@@ -98,7 +98,7 @@ class APIController extends AbstractController
 
             $data['id'] = $result->getId();
             $data['title'] = $result->getTitle();
-            $data['subtitle'] = $result->getTitle();
+            $data['subtitle'] = $result->getSubtitle();
             $data['artist'] = $result->getArtist();
             $data['charter'] = $result->getCharter();
             $data['tags'] = explode(",", $result->getTags());
