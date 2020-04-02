@@ -37,6 +37,11 @@ class Song
     private $charter;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $uploader;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $fileReference;
@@ -110,6 +115,18 @@ class Song
     public function setCharter(string $charter): self
     {
         $this->charter = $charter;
+
+        return $this;
+    }
+
+    public function getUploader(): ?int
+    {
+        return $this->uploader;
+    }
+
+    public function setUploader(int $uploader): self
+    {
+        $this->uploader = $uploader;
 
         return $this;
     }

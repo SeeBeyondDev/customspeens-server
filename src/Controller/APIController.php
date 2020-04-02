@@ -108,6 +108,7 @@ class APIController extends AbstractController
             $data['subtitle'] = $result->getSubtitle();
             $data['artist'] = $result->getArtist();
             $data['charter'] = $result->getCharter();
+            $data['uploader'] = $result->getUploader();
             $data['tags'] = explode(",", $result->getTags());
             $data['paths']['ogg'] = $baseUrl."/uploads/audio/".$result->getFileReference().".ogg";
             $data['paths']['cover'] = $baseUrl."/uploads/cover/".$result->getFileReference().".png";
@@ -181,6 +182,45 @@ class APIController extends AbstractController
                 $oneResult['image_path'] = $baseUrl."/uploads/ads/".$result->getImagePath();
 
                 $data[] = $oneResult;
+            }
+    
+            return new JsonResponse(['version' => $this->currentVersion, 'status' => 200, 'data' => $data]);
+        }
+    }
+
+    /**
+     * @Route("/api/user/{userId}", name="api.users.detail")
+     */
+    public function userDetail(Request $request, int $userId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $data = [];
+
+        $result = $em->getRepository(User::class)->findOneBy(array('id' => $userId));
+        $baseUrl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
+
+        if(!$result) {
+            return new JsonResponse(['version' => $this->currentVersion, 'status' => 404, 'data' => []]);
+        } else {
+            $data['id'] = $result->getId();
+            $data['username'] = $result->getUsername();
+            $data['avatar'] = $baseUrl."/uploads/avatar/".$result->getUsername().".png";
+
+            // Get User Songs
+            $resultsSongs = $em->getRepository(Song::class)->findBy(array('uploader' => $result->getId()));
+                 
+            foreach($resultsSongs as $result) {
+                $oneResult = [];
+
+                $oneResult['id'] = $result->getId();
+                $oneResult['title'] = $result->getTitle();
+                $oneResult['subtitle'] = $result->getSubtitle();
+                $oneResult['artist'] = $result->getArtist();
+                $oneResult['charter'] = $result->getCharter();
+                $oneResult['uploader'] = $result->getUploader();
+                $oneResult['cover'] = $baseUrl."/uploads/cover/".$result->getFileReference().".png";
+
+                $data['songs'][] = $oneResult;
             }
     
             return new JsonResponse(['version' => $this->currentVersion, 'status' => 200, 'data' => $data]);
