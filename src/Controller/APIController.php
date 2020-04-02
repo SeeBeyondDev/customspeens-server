@@ -196,6 +196,25 @@ class APIController extends AbstractController
         $baseUrl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
         $data = [];
+        $data['users'] = [];
+        $data['songs'] = [];
+
+        // Users
+        $resultsUsers = $em->getRepository(User::class)->createQueryBuilder('o')
+                                                        ->where('o.username LIKE :query')
+                                                        ->setParameter('query', '%'.$searchQuery.'%')
+                                                        ->getQuery()
+                                                        ->getResult();
+
+        foreach($resultsUsers as $result) {
+            $oneResult = [];
+
+            $oneResult['id'] = $result->getId();
+            $oneResult['username'] = $result->getUsername();
+            $oneResult['avatar'] = $baseUrl."/uploads/avatar/".$result->getUsername().".png";
+
+            $data['users'][] = $oneResult;
+        }
 
         // Songs
         $resultsSongs = $em->getRepository(Song::class)->createQueryBuilder('o')
@@ -219,23 +238,6 @@ class APIController extends AbstractController
             $oneResult['cover'] = $baseUrl."/uploads/cover/".$result->getFileReference().".png";
 
             $data['songs'][] = $oneResult;
-        }
-
-        // Users
-        $resultsUsers = $em->getRepository(User::class)->createQueryBuilder('o')
-                                                        ->where('o.username LIKE :query')
-                                                        ->setParameter('query', '%'.$searchQuery.'%')
-                                                        ->getQuery()
-                                                        ->getResult();
-
-        foreach($resultsUsers as $result) {
-            $oneResult = [];
-
-            $oneResult['id'] = $result->getId();
-            $oneResult['username'] = $result->getUsername();
-            $oneResult['avatar'] = $baseUrl."/uploads/avatar/".$result->getUsername().".png";
-
-            $data['users'][] = $oneResult;
         }
 
         return new JsonResponse(['version' => $this->currentVersion, 'status' => 200, 'data' => $data]);
