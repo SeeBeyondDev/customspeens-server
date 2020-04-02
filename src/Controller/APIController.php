@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Entity\Song;
+use App\Entity\User;
 use App\Entity\Ad;
 
 class APIController extends AbstractController
@@ -184,5 +185,57 @@ class APIController extends AbstractController
     
             return new JsonResponse(['version' => $this->currentVersion, 'status' => 200, 'data' => $data]);
         }
+    }
+
+    /**
+     * @Route("/api/search/{searchQuery}", name="api.search")
+     */
+    public function search(Request $request, string $searchQuery)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $baseUrl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
+
+        // Songs
+        $resultsSongs = $em->getRepository(Song::class)->createQueryBuilder('o')
+                                                        ->where('o.title LIKE :query')
+                                                        ->orWhere('o.subtitle LIKE :query')
+                                                        ->orWhere('o.tags LIKE :query')
+                                                        ->orWhere('o.artist LIKE :query')
+                                                        ->orWhere('o.charter LIKE :query')
+                                                        ->setParameter('query', '%'.$searchQuery.'%')
+                                                        ->getQuery()
+                                                        ->getResult();
+                 
+        foreach($resultsSongs as $result) {
+            $oneResult = [];
+
+            $oneResult['id'] = $result->getId();
+            $oneResult['title'] = $result->getTitle();
+            $oneResult['subtitle'] = $result->getSubtitle();
+            $oneResult['artist'] = $result->getArtist();
+            $oneResult['charter'] = $result->getCharter();
+            $oneResult['cover'] = $baseUrl."/uploads/cover/".$result->getFileReference().".png";
+
+            $data['songs'][] = $oneResult;
+        }
+
+        // Users
+        $resultsUsers = $em->getRepository(User::class)->createQueryBuilder('o')
+                                                        ->where('o.username LIKE :query')
+                                                        ->setParameter('query', '%'.$searchQuery.'%')
+                                                        ->getQuery()
+                                                        ->getResult();
+
+        foreach($resultsUsers as $result) {
+            $oneResult = [];
+
+            $oneResult['id'] = $result->getId();
+            $oneResult['username'] = $result->getUsername();
+            $oneResult['avatar'] = $baseUrl."/uploads/avatar/".$result->getUsername().".png";
+
+            $data['users'][] = $oneResult;
+        }
+
+        return new JsonResponse(['version' => $this->currentVersion, 'status' => 200, 'data' => $data]);
     }
 }
