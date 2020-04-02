@@ -29,6 +29,11 @@ class Ad
     /**
      * @ORM\Column(type="string", length=7)
      */
+    private $textColor;
+
+    /**
+     * @ORM\Column(type="string", length=7)
+     */
     private $color;
 
     /**
@@ -76,6 +81,18 @@ class Ad
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getTextColor(): ?string
+    {
+        return $this->textColor;
+    }
+
+    public function setTextColor(string $textColor): self
+    {
+        $this->textColor = $textColor;
 
         return $this;
     }

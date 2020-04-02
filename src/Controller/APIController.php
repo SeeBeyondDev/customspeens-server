@@ -172,6 +172,7 @@ class APIController extends AbstractController
                 $oneResult['id'] = $result->getId();
                 $oneResult['title'] = $result->getTitle();
                 $oneResult['type'] = $result->getType();
+                $oneResult['textColor'] = $result->getTextColor();
                 $oneResult['color'] = $result->getColor();
                 $oneResult['button']['type'] = $result->getButtonType();
                 $oneResult['button']['data'] = $result->getButtonData();
