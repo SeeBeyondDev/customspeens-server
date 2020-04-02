@@ -195,6 +195,8 @@ class APIController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $baseUrl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
+        $data = [];
+
         // Songs
         $resultsSongs = $em->getRepository(Song::class)->createQueryBuilder('o')
                                                         ->where('o.title LIKE :query')
